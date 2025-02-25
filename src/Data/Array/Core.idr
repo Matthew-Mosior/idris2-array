@@ -28,6 +28,9 @@ prim__emptyArray : Bits32 -> PrimIO AnyPtr
          "javascript:lambda:(a,x,i,v,w) => {if (x[i] === v) {x[i] = w; return 1;} else {return 0;}}"
 prim__casSet : AnyPtr -> Bits32 -> (prev,val : a) -> Bits8
 
+%foreign "scheme:(lambda (vec len) (let* ((old-len (vector-length vec)) (new-len (+ old-len len)) (new-vec (make-vector new-len))) (vector-copy! new-vec 0 vec) new-vec))"
+prim__growArray : AnyPtr -> Bits32 -> PrimIO AnyPtr
+
 --------------------------------------------------------------------------------
 --          Immutable Arrays
 --------------------------------------------------------------------------------
