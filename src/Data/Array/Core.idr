@@ -166,6 +166,14 @@ export %inline
 mtake : MArray s n a -> (0 m : Nat) -> (0 lte : LTE m n) => F1 s (MArray s m a)
 mtake (MA arr) _ t = MA arr # t
 
+||| Allocates a new mutable array and adds the elements from `r`
+||| at its beginning.
+export
+mgrow : (r : MArray s n a) -> (m : Nat) -> F1 s (MArray s (m+n) a)
+mgrow (MA arr) m t =
+  let m # t := ffi (prim__growArray arr (cast m)) t
+    in MA m # t
+
 --------------------------------------------------------------------------------
 -- Allocating Arrays
 --------------------------------------------------------------------------------
