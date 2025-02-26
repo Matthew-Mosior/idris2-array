@@ -30,7 +30,8 @@ prim__casSet : AnyPtr -> Bits32 -> (prev,val : a) -> Bits8
 
 -- %foreign "scheme,chez:(lambda (vec len) (let* ((old-len (vector-length vec)) (new-len (+ old-len len)) (new-vec (make-vector new-len))) (vector-copy! new-vec 0 vec) new-vec))"
 --         "scheme:(lambda (vec len) (let* ((old-len (vector-length vec)) (new-len (+ old-len len)) (new-vec (make-vector new-len))) (do ((i 0 (+ i 1))) ((= i old-len) new-vec) (vector-set! new-vec i (vector-ref vec i)))))"
-%foreign "scheme,chez:(lambda (vec len) (let* ((old-len (vector-length vec)) (new-len (+ old-len len)) (new-vec (make-vector new-len))) (let ((i 0)) (vector-for-each (lambda (x) (vector-set! new-vec i x) (set! i (+ i 1))) vec)) new-vec))"
+-- %foreign "scheme,chez:(lambda (vec len) (let* ((old-len (vector-length vec)) (new-len (+ old-len len)) (new-vec (make-vector new-len))) (let ((i 0)) (vector-for-each (lambda (x) (vector-set! new-vec i x) (set! i (+ i 1))) vec)) new-vec))"
+%foreign "scheme,chez:(lambda (vec len) (let* ((old-len (vector-length vec)) (new-len (+ old-len len)) (new-vec (make-vector new-len))) (let loop ([i (fx- old-len 1)]) (cond [(fx> i 0) (vector-set! new-vec i (vector-ref vec i)) (let ([i (fx- i 1)]) (vector-set! new-vec i (vector-ref vec i))) (loop (fx- i 2))] [(fx= i 0) (vector-set! new-vec i (vector-ref vec i))])) new-vec))"
 prim__growArray : AnyPtr -> Bits32 -> PrimIO AnyPtr
 
 --------------------------------------------------------------------------------
