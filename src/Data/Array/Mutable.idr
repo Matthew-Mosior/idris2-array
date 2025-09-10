@@ -300,6 +300,28 @@ parameters {n : Nat}
         let x' # t := get r x t
           in x' # t
 
+parameters {n : Nat}
+           (sl : SnocList (MArray s n a))
+
+  ||| Concatenate a snoclist of mutable arrays.
+  msnocconcat : F1 s (MArray s ((length sl) `mult` n) a)
+  msnocconcat t =
+    let ls      := the (List (MArray s n a)) (cast sl)
+        tft # t := unsafeMArray1 ((length sl) `mult` n) t
+        _   # t := go ls tft t
+      in tft # t
+    where
+      go :  (ls : List (MArray s n a))
+         -> (q : MArray s n a)
+         -> {auto v : Ix x n}
+         -> {auto 0 prf : LTE m $ ixToNat v}
+         -> F1 s (MArray s ((length sl) `mult` n) a)
+      go Nil       q t =
+        q # t
+      go (x :: xs) q t =
+        let q' # t := mappend q x t
+          in go xs q t
+
 --------------------------------------------------------------------------------
 --          Linear Utilities
 --------------------------------------------------------------------------------
